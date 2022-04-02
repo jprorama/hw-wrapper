@@ -75,7 +75,7 @@ do
 		
 		# collect results
 		gzip -f $trainrun/results.csv
-		mv $trainrun/results.csv $experiment/method-${trainrun}_${DATESTR}.csv.gz
+		mv $trainrun/results.csv.gz $experiment/method-${trainrun}_${DATESTR}.csv.gz
 	
 		# preserve model
 		tar -czf $experiment/${trainrun}_${DATESTR}.tar.gz $trainrun/[0125]*
