@@ -32,6 +32,10 @@ do
 	do
 		sed -i -e "s|EXP_PATH|${exp_path}|" $file
 	done
+	# complete the templates missing dirs
+	mkdir ${trainrun}/challenge
+	mkdir ${trainrun}/mpd_train
+	mkdir ${trainrun}/mpd_test
 
 	# provide a test subset for validation
 	train-test-split.sh $trainset
