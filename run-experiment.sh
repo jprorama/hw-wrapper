@@ -7,7 +7,6 @@ prefixdir=~/projects/recsys18-codes/hello-world
 
 trainsetsize=$1
 
-DATESTR=`date +'%Y-%m-%dT%H:%M:%S'`
 
 # run in docker container
 dockrun="docker run --gpus all -it -v /home:/home -w $(pwd) --dns 8.8.8.8 nvcr.io/nvidia/tensorflow:21.08-tf1-py3"
@@ -39,6 +38,9 @@ do
 
 	# provide a test subset for validation
 	train-test-split.sh $trainset
+
+	# record time for start of experiment
+	DATESTR=`date +'%Y-%m-%dT%H:%M:%S'`
 
 	trained=0
 	for challenge in mympd-full mpd
@@ -79,13 +81,15 @@ do
 		
 		# collect results
 		gzip -f $trainrun/results.csv
-		mv $trainrun/results.csv.gz $experiment/method-${trainrun}_${DATESTR}.csv.gz
+		mv $trainrun/results.csv.gz $experiment/method-hw_${challenge}_${trainset}_${DATESTR}_$notag.csv.gz
 	
 		# preserve model
 		tar -czf $experiment/${trainrun}_${DATESTR}.tar.gz $trainrun/[0125]*
 	done
+
+	# remove files owned by container and caller
+	${dockrun} rm -rf $trainrun
+	rm -rf $trainrun $trainset
+
 done
 
-# remove files owned by container and caller
-${dockrun} rm -rf $trainrun
-rm -rf $trainrun $trainset
