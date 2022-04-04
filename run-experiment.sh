@@ -6,6 +6,7 @@ PATH=`pwd`:$PATH
 prefixdir=~/projects/recsys18-codes/hello-world
 
 trainsetsize=$1
+lr_dae=${2:-0.005}
 
 
 # run in docker container
@@ -32,6 +33,7 @@ do
 	for file in ${trainrun}/*/config.ini
 	do
 		sed -i -e "s|EXP_PATH|${exp_path}|" $file
+		sed -i -e "s|LR_DAE|${lr_dae}|" $file
 	done
 	# complete the templates missing dirs
 	mkdir ${trainrun}/challenge
