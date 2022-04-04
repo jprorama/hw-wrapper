@@ -50,6 +50,7 @@ do
 		cp challenge/${challenge}-challenge_set.json $trainrun/challenge/challenge_set.json
 
 	        # run data_gen $trainrun
+		echo \*\*\* step: ./run-dataprep.sh $trainrun $prefixdir
 		$dockrun ./run-dataprep.sh $trainrun $prefixdir
 		if [ $? -ne 0 ]
 		then
@@ -61,6 +62,7 @@ do
 		# train if not trained
 		if [ $trained -eq 0 ]
 		then
+			echo \*\*\* step: ./run-train.sh  $trainrun $prefixdir
 			$dockrun ./run-train.sh  $trainrun $prefixdir
 			if [ $? -eq 0 ]
 			then
@@ -72,6 +74,7 @@ do
 		fi
 
 		# run inference
+		echo \*\*\* step: ./run-inf.sh $trainrun $prefixdir
 		$dockrun ./run-inf.sh $trainrun $prefixdir
 		if [ $? -ne 0 ]
 		then
