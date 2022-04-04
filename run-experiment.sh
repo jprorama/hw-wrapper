@@ -9,7 +9,9 @@ trainsetsize=$1
 
 
 # run in docker container
-dockrun="docker run --gpus all -it -v /home:/home -w $(pwd) --dns 8.8.8.8 nvcr.io/nvidia/tensorflow:21.08-tf1-py3"
+#dockrun="docker run --gpus all -it -v /home:/home -w $(pwd) --dns 8.8.8.8 nvcr.io/nvidia/tensorflow:21.08-tf1-py3"
+dockrun="nvidia-docker run --shm-size=1g --ulimit memlock=-1 --ulimit stack=67108864 \
+	--gpus all -it -v /home:/home -w $(pwd) --dns 8.8.8.8 nvcr.io/nvidia/tensorflow:21.08-tf1-py3"
 
 # create experiment dirs to house results <code>_<chal>: hw_mympd-full and hw_mpd
 mkdir -p hw_mympd-full hw_mpd
