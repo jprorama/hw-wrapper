@@ -7,6 +7,7 @@ prefixdir=~/projects/recsys18-codes/hello-world
 
 trainsetsize=$1
 lr_dae=${2:-0.005}
+tag=$3
 
 
 # run in docker container
@@ -49,7 +50,15 @@ do
 	trained=0
 	for challenge in mympd-full mpd
 	do
-		experiment=hw_$challenge
+		# create output dir for experiment
+		if [ "$tag" == "" ]
+		then
+			experiment=hw_${challenge}
+		else
+			experiment=hw_${challenge}_${tag}
+		fi
+		mkdir -p $experiment
+
 
 		cp challenge/${challenge}-challenge_set.json $trainrun/challenge/challenge_set.json
 
