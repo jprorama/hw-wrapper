@@ -7,8 +7,9 @@ prefixdir=~/projects/recsys18-codes/hello-world
 
 trainsetsize=$1
 lr_dae=${2:-0.005}
-tag=$3
-tf_container_ver=${4:-21.08}
+lr_pretrain=${3:-0.01}
+tag=$4
+tf_container_ver=${5:-21.08}
 
 
 # run in docker container
@@ -36,6 +37,7 @@ do
 	do
 		sed -i -e "s|EXP_PATH|${exp_path}|" $file
 		sed -i -e "s|LR_DAE|${lr_dae}|" $file
+		sed -i -e "s|LR_PRETRAIN|${lr_pretrain}|" $file
 	done
 	# complete the templates missing dirs
 	mkdir ${trainrun}/challenge
