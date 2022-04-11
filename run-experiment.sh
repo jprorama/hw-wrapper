@@ -25,8 +25,13 @@ for size in $trainsetsize
 do
 	# get trainset
 	trainset=mympd-full-${size}k
+	srctrainset=$trainset
+	if [ "$tag" != "" ]
+	then
+		trainset=${trainset}_${tag}
+	fi
 
-	rclone copy lts:mpd-datasets/${trainset} ${trainset}
+	rclone copy lts:mpd-datasets/${srctrainset} ${trainset}
 
 	# create trainrun from template <code>_<chal>_<trainset>: hw_mympd-full_mympd-full-20k
 	trainrun=hw_${trainset}
