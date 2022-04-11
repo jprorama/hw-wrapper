@@ -59,10 +59,9 @@ do
 	for challenge in mympd-full mpd
 	do
 		# create output dir for experiment
-		if [ "$tag" == "" ]
+		experiment=hw_${challenge}
+		if [ "$tag" != "" ]
 		then
-			experiment=hw_${challenge}
-		else
 			experiment=hw_${challenge}_${tag}
 		fi
 		mkdir -p $experiment
@@ -77,7 +76,7 @@ do
 		then
 			echo "dataprep failed!"
 			exit 1
-		fi	
+		fi
 
 
 		# train if not trained
