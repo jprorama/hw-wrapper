@@ -14,8 +14,19 @@ tf_container_ver=${5:-21.08}
 
 # run in docker container
 #dockrun="docker run --gpus all -it -v /home:/home -w $(pwd) --dns 8.8.8.8 nvcr.io/nvidia/tensorflow:21.08-tf1-py3"
-dockrun="nvidia-docker run --shm-size=1g --ulimit memlock=-1 --ulimit stack=67108864 \
-	--gpus all -it -v /home:/home -w $(pwd) --dns 8.8.8.8 nvcr.io/nvidia/tensorflow:${tf_container_ver}-tf1-py3"
+#dockrun="nvidia-docker run --shm-size=1g --ulimit memlock=-1 --ulimit stack=67108864 \
+#	--gpus all -it -v /home:/home -w $(pwd) --dns 8.8.8.8 nvcr.io/nvidia/tensorflow:${tf_container_ver}-tf1-py3"
+
+# with singularity you need to explicitly import env vars
+export SINGULARITYENV_PATH=$PATH
+export SINGULARITYENV_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+#dockrun="singularity run --nv -B /cm tensorflow_latest-gpu.sif"
+# explicity pull the image first
+# singularity pull tensorflow_${tf_container_ver}-tf1-py3.sif docker://nvcr.io/nvidia/tensorflow:${tf_container_ver}-tf1-py3
+dockrun="singularity run --nv -B /cm -B /data/user/$USER tensorflow_${tf_container_ver}-tf1-py3.sif"
+
+# check python env
+$dockrun python3 ./py-env.py
 
 # create experiment dirs to house results <code>_<chal>: hw_mympd-full and hw_mpd
 mkdir -p hw_mympd-full hw_mpd
