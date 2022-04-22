@@ -12,6 +12,8 @@ tag=$4
 tf_container_ver=${5:-21.08}
 resultsdir=${6:-.}
 
+# suppress noisy infomation messages from tensorflow
+export TF_CPP_MIN_LOG_LEVEL=1
 
 # run in docker container
 #dockrun="docker run --gpus all -it -v /home:/home -w $(pwd) --dns 8.8.8.8 nvcr.io/nvidia/tensorflow:21.08-tf1-py3"
@@ -21,6 +23,7 @@ resultsdir=${6:-.}
 # with singularity you need to explicitly import env vars
 export SINGULARITYENV_PATH=$PATH
 export SINGULARITYENV_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+export SINGULARITYENV_TF_CPP_MIN_LOG_LEVEL=$TF_CPP_MIN_LOG_LEVEL
 #dockrun="singularity run --nv -B /cm tensorflow_latest-gpu.sif"
 # explicity pull the image first
 # singularity pull tensorflow_${tf_container_ver}-tf1-py3.sif docker://nvcr.io/nvidia/tensorflow:${tf_container_ver}-tf1-py3
