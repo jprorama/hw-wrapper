@@ -10,6 +10,7 @@ lr_dae=${2:-0.005}
 lr_pretrain=${3:-0.01}
 tag=$4
 tf_container_ver=${5:-21.08}
+resultsdir=${6:-.}
 
 
 # run in docker container
@@ -70,10 +71,10 @@ do
 	for challenge in mympd-full mpd
 	do
 		# create output dir for experiment
-		experiment=hw_${challenge}
+		experiment=${resultsdir}/hw_${challenge}
 		if [ "$tag" != "" ]
 		then
-			experiment=hw_${challenge}_${tag}
+			experiment=${experiment}_${tag}
 		fi
 		mkdir -p $experiment
 
