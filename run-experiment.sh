@@ -125,7 +125,7 @@ do
 		mv $trainrun/results.csv $experiment/method-hw_${challenge}_${srctrainset}_${DATESTR}_slurm-${SLURM_JOBID}.csv
 	
 		# preserve model
-		tar -czf $experiment/${trainrun}_${DATESTR}.tar.gz $trainrun/[0125]*
+		tar -czf $experiment/${trainrun}_${DATESTR}.tar.gz $trainrun/[0125]* $trainrun/tf_logs/
 	done
 
 	# remove files owned by container and caller
