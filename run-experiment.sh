@@ -43,7 +43,9 @@ do
 		trainset=${trainset}_${tag}
 	fi
 
-	rclone copy lts:mpd-datasets/${srctrainset} ${trainset}
+	#rclone copy lts:mpd-datasets/${srctrainset} ${trainset}
+	cp -r ~/projects/mpd-test-sets/data/${srctrainset} ${trainset}
+	chmod -R u+w ${trainset}
 
 	# create trainrun from template <code>_<chal>_<trainset>: hw_mympd-full_mympd-full-20k
 	trainrun=hw_${trainset}
@@ -115,8 +117,9 @@ do
 		fi
 		
 		# collect results
-		gzip -f $trainrun/results.csv
-		mv $trainrun/results.csv.gz $experiment/method-hw_${challenge}_${trainset}_${DATESTR}_$notag.csv.gz
+		# don't gzip in batch
+		#gzip -f $trainrun/results.csv
+		mv $trainrun/results.csv $experiment/method-hw_${challenge}_${srctrainset}_${DATESTR}_slurm-${SLURM_JOBID}.csv
 	
 		# preserve model
 		tar -czf $experiment/${trainrun}_${DATESTR}.tar.gz $trainrun/[0125]*
