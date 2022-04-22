@@ -10,12 +10,27 @@ lr_dae=${2:-0.005}
 lr_pretrain=${3:-0.01}
 tag=$4
 tf_container_ver=${5:-21.08}
+resultsdir=${6:-.}
 
+# suppress noisy infomation messages from tensorflow
+export TF_CPP_MIN_LOG_LEVEL=1
 
 # run in docker container
 #dockrun="docker run --gpus all -it -v /home:/home -w $(pwd) --dns 8.8.8.8 nvcr.io/nvidia/tensorflow:21.08-tf1-py3"
-dockrun="nvidia-docker run --shm-size=1g --ulimit memlock=-1 --ulimit stack=67108864 \
-	--gpus all -it -v /home:/home -w $(pwd) --dns 8.8.8.8 nvcr.io/nvidia/tensorflow:${tf_container_ver}-tf1-py3"
+#dockrun="nvidia-docker run --shm-size=1g --ulimit memlock=-1 --ulimit stack=67108864 \
+#	--gpus all -it -v /home:/home -w $(pwd) --dns 8.8.8.8 nvcr.io/nvidia/tensorflow:${tf_container_ver}-tf1-py3"
+
+# with singularity you need to explicitly import env vars
+export SINGULARITYENV_PATH=$PATH
+export SINGULARITYENV_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+export SINGULARITYENV_TF_CPP_MIN_LOG_LEVEL=$TF_CPP_MIN_LOG_LEVEL
+#dockrun="singularity run --nv -B /cm tensorflow_latest-gpu.sif"
+# explicity pull the image first
+# singularity pull tensorflow_${tf_container_ver}-tf1-py3.sif docker://nvcr.io/nvidia/tensorflow:${tf_container_ver}-tf1-py3
+dockrun="singularity run --nv -B /cm -B /data/user/$USER tensorflow_${tf_container_ver}-tf1-py3.sif"
+
+# check python env
+$dockrun python3 ./py-env.py
 
 # create experiment dirs to house results <code>_<chal>: hw_mympd-full and hw_mpd
 mkdir -p hw_mympd-full hw_mpd
@@ -31,7 +46,9 @@ do
 		trainset=${trainset}_${tag}
 	fi
 
-	rclone copy lts:mpd-datasets/${srctrainset} ${trainset}
+	#rclone copy lts:mpd-datasets/${srctrainset} ${trainset}
+	cp -r ~/projects/mpd-test-sets/data/${srctrainset} ${trainset}
+	chmod -R u+w ${trainset}
 
 	# create trainrun from template <code>_<chal>_<trainset>: hw_mympd-full_mympd-full-20k
 	trainrun=hw_${trainset}
@@ -59,10 +76,10 @@ do
 	for challenge in mympd-full mpd
 	do
 		# create output dir for experiment
-		experiment=hw_${challenge}
+		experiment=${resultsdir}/hw_${challenge}
 		if [ "$tag" != "" ]
 		then
-			experiment=hw_${challenge}_${tag}
+			experiment=${experiment}_${tag}
 		fi
 		mkdir -p $experiment
 
@@ -103,11 +120,12 @@ do
 		fi
 		
 		# collect results
-		gzip -f $trainrun/results.csv
-		mv $trainrun/results.csv.gz $experiment/method-hw_${challenge}_${trainset}_${DATESTR}_$notag.csv.gz
+		# don't gzip in batch
+		#gzip -f $trainrun/results.csv
+		mv $trainrun/results.csv $experiment/method-hw_${challenge}_${srctrainset}_${DATESTR}_slurm-${SLURM_JOBID}.csv
 	
 		# preserve model
-		tar -czf $experiment/${trainrun}_${DATESTR}.tar.gz $trainrun/[0125]*
+		tar -czf $experiment/${trainrun}_${DATESTR}.tar.gz $trainrun/[0125]* $trainrun/tf_logs/
 	done
 
 	# remove files owned by container and caller
